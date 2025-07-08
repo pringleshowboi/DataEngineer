@@ -1,0 +1,114 @@
+/*
+Here's the first-touch query, in case you need it
+WITH first_touch AS (
+    SELECT user_id,
+        MIN(timestamp) as first_touch_at
+    FROM page_visits
+    GROUP BY user_id)
+SELECT ft.user_id,
+    ft.first_touch_at,
+    pv.utm_source,
+		pv.utm_campaign
+FROM first_touch ft
+JOIN page_visits pv
+    ON ft.user_id = pv.user_id
+    AND ft.first_touch_at = pv.timestamp;
+
+*/
+
+select distinct count(utm_campaign) as utm_campaigns
+from page_visits;
+
+select distinct count(utm_source) as utm_sources
+from page_visits;
+
+select distinct user_id, 
+  utm_campaign, utm_source
+from page_visits;
+
+select distinct page_name
+from page_visits;
+
+WITH first_touch AS (
+    SELECT user_id,
+        MIN(timestamp) as first_touch_at
+    FROM page_visits
+    GROUP BY user_id)
+SELECT ft.user_id,
+    ft.first_touch_at,
+    pv.utm_source,
+		pv.utm_campaign
+FROM first_touch ft
+JOIN page_visits pv
+    ON ft.user_id = pv.user_id
+    AND ft.first_touch_at = pv.timestamp;
+
+WITH last_touch AS (
+    SELECT user_id,
+        MIN(timestamp) as last_touch_at
+    FROM page_visits
+    GROUP BY user_id)
+SELECT lt.user_id,
+    lt.last_touch_at,
+    pv.utm_source,
+		pv.utm_campaign
+FROM last_touch lt
+JOIN page_visits pv
+    ON lt.user_id = pv.user_id
+    AND lt.last_touch_at = pv.timestamp;
+
+select distinct count(user_id) as purchases_made
+from page_visits
+where page_name = '4 - purchase'
+
+WITH last_touch AS (
+  SELECT user_id,
+         MAX(timestamp) AS last_touch_at
+  FROM page_visits
+  WHERE page_name = '4 - purchase'
+  GROUP BY user_id
+)
+SELECT
+  pv.user_id,
+  pv.page_name,
+  lt.last_touch_at,
+  pv.utm_source,
+  pv.utm_campaign
+FROM last_touch lt
+JOIN page_visits pv
+  ON lt.user_id = pv.user_id
+  AND lt.last_touch_at = pv.timestamp;
+
+WITH first_touch AS (
+  SELECT user_id, MIN(timestamp) AS first_touch_at
+  FROM page_visits
+  GROUP BY user_id
+),
+last_touch AS (
+  SELECT user_id, MAX(timestamp) AS last_touch_at
+  FROM page_visits
+  GROUP BY user_id
+),
+ft_data AS (
+  SELECT ft.user_id, pv.utm_source AS first_utm_source, pv.utm_campaign AS first_utm_campaign
+  FROM first_touch ft
+  JOIN page_visits pv
+    ON ft.user_id = pv.user_id AND ft.first_touch_at = pv.timestamp
+),
+lt_data AS (
+  SELECT lt.user_id, pv.utm_source AS last_utm_source, pv.utm_campaign AS last_utm_campaign
+  FROM last_touch lt
+  JOIN page_visits pv
+    ON lt.user_id = pv.user_id AND lt.last_touch_at = pv.timestamp
+)
+SELECT
+  ft_data.user_id,
+  first_utm_source,
+  first_utm_campaign,
+  last_utm_source,
+  last_utm_campaign
+FROM ft_data
+JOIN lt_data
+  ON ft_data.user_id = lt_data.user_id;
+
+

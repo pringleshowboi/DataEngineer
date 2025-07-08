@@ -1,0 +1,60 @@
+select * 
+from stream
+limit 20;
+
+select * 
+from chat
+limit 20;
+
+select distinct game
+from stream;
+
+select distinct channel
+from stream;
+
+select game, count(*)
+from stream 
+group by game
+order by count(*) desc;
+
+select country, count(*)
+from stream
+where game = 'League of Legends'
+group by country
+order by count(*) desc;
+
+select player, count(*)
+from stream
+group by player
+order by count(*) desc;
+
+select game,
+  case
+    when game = 'Dota 2'
+      then 'MOBA'
+    when game = 'League of Legends'
+      then 'MOBA'
+    when game = 'Heroes of the Storm'
+      then 'MOBA'
+    when game = 'Counter-Strike: Global Offensive'
+      then 'FPS'
+    when game = 'DayZ'
+      then 'Survival'
+    when game = 'ARK: Survival Evolved'
+      then 'Survival'
+    else 'Other'
+    end as 'genre',
+    count(*)
+from stream
+group by game
+order by count(*) desc;
+
+SELECT time
+FROM stream
+LIMIT 10;
+
+SELECT time,
+   strftime('%S', time)
+FROM stream
+GROUP BY 1
+LIMIT 20;

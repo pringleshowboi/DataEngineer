@@ -1,0 +1,91 @@
+select * from state_climate;
+
+select state, year, tempc,
+  AVG(tempc) OVER (
+    PARTITION BY state
+    ORDER BY year
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS running_avg_temp
+from state_climate
+order by state, year;
+
+select state, year, tempc,
+  FIRST_VALUE (tempc) OVER (
+    PARTITION BY state
+    ORDER BY tempc ASC
+    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+  ) AS lowest_temp
+from state_climate
+order by state, year;
+
+select state, year, tempc,
+  LAST_VALUE (tempc) OVER (
+    PARTITION BY state
+    ORDER BY tempc ASC
+    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+  ) AS highest_temp
+from state_climate
+order by state, year;
+
+select state, year, tempc,
+  LAG(tempc) OVER (
+    PARTITION BY state
+    ORDER BY year
+  ) as prev_year_temp,
+  tempc - LAG(tempc) over (
+    PARTITION BY state
+    order by state
+  ) as temp_change
+from state_climate
+order by state, year;
+
+
+select state, year, tempc
+  RANK() over (
+    order by tempc ASC
+  ) as coldest_rank
+from state_climate
+order by coldest_rank ASC;
+
+select state, year, tempc
+  RANK() over (
+    order by tempc DESC
+  ) as warmest_rank
+from (select state, year, tempc
+      RANK() over ( partition by state
+                    order by tempc DESC) as state_warmest_rank
+      from state_climate) as state_max
+where state_warmest_rank =1
+order by warmest_rank ASC;
+
+
+with yearly_avg as (
+  select state, year, avg(tempc) as avg_temp
+  from state_climate
+  group by state, year
+)
+select state, year, avg_temp, NTLILE(4) over (
+  partition by state
+  order by avg_temp asc
+) as quartile
+from yearly_avg
+order by state, quartile, year;
+
+
+WITH yearly_avg AS (
+  SELECT
+    state,
+    year,
+    AVG(tempc) AS avg_temp
+  FROM state_climate
+  GROUP BY state, year
+)
+SELECT
+  state,
+  year,
+  avg_temp,
+  NTILE(5) OVER (
+    ORDER BY avg_temp ASC
+  ) AS quintile
+FROM yearly_avg
+ORDER BY quintile, avg_temp, year;
