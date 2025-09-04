@@ -1,0 +1,39 @@
+{
+  "audit_log": [
+    {
+      "timestamp": "2025-08-19T00:27:49.513232",
+      "action": "DATA_LOAD",
+      "details": "Loaded 17265 records",
+      "data_hash": "no_data"
+    },
+    {
+      "timestamp": "2025-08-19T00:27:49.524074",
+      "action": "CALCULATION",
+      "details": "Total crime per station calculated",
+      "data_hash": "54d1dd3fc63548db"
+    },
+    {
+      "timestamp": "2025-08-19T00:27:53.312338",
+      "action": "ANALYSIS_COMPLETE",
+      "details": "Comprehensive analysis created",
+      "data_hash": "70f6ef85e9209ec1"
+    },
+    {
+      "timestamp": "2025-08-19T00:27:53.356406",
+      "action": "MAP_CREATION",
+      "details": "Creating map for top 100 stations",
+      "data_hash": "c68caf0925cc0440"
+    },
+    {
+      "timestamp": "2025-08-19T00:27:53.409804",
+      "action": "CALCULATION",
+      "details": "Total crime per station calculated",
+      "data_hash": "3dfcffc2f8b87947"
+    }
+  ],
+  "data_summary": {
+    "total_records": 17265,
+    "data_hash": "262bcda4d7143234",
+    "export_timestamp": "2025-08-19T00:27:53.656961"
+  }
+}
