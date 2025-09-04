@@ -1,0 +1,50 @@
+select * from survey
+limit 10;
+
+select question, count(distinct user_id) as users
+from survey
+group by question;
+
+select
+  question,
+  COUNT(distinct user_id) as users,
+  LAG(COUNT(distinct user_id)) over (ORDER BY question) * 100 /
+  FIRST_VALUE(COUNT(distinct user_id)) over (ORDER BY question ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as lag_pct_of_first
+from survey
+group by question
+order by question;
+
+SELECT
+  q.user_id,
+  CASE
+    WHEN h.user_id IS NOT NULL THEN TRUE
+    ELSE FALSE
+  END AS is_home_try_on,
+  h.number_of_pairs,
+  CASE
+    WHEN p.user_id IS NOT NULL THEN TRUE
+    ELSE FALSE
+  END AS is_purchase
+FROM quiz q
+LEFT JOIN home_try_on h
+  ON q.user_id = h.user_id
+LEFT JOIN purchase p
+  ON q.user_id = p.user_id
+LIMIT 10;
+
+SELECT
+  COUNT(DISTINCT p.user_id) * 100.0 / COUNT(DISTINCT q.user_id) AS overall_conversion_pct
+FROM quiz q
+LEFT JOIN purchase p ON q.user_id = p.user_id;
+
+SELECT
+  COUNT(DISTINCT h.user_id) * 100.0 / COUNT(DISTINCT q.user_id) AS try_on_conversion_pct
+FROM quiz q
+LEFT JOIN home_try_on h ON q.user_id = h.user_id;
+
+SELECT
+  h.number_of_pairs,
+  COUNT(DISTINCT p.user_id) * 100.0 / COUNT(DISTINCT h.user_id) AS purchase_conversion_pct
+FROM home_try_on h
+LEFT JOIN purchase p ON h.user_id = p.user_id
+GROUP BY h.number_of_pairs;
